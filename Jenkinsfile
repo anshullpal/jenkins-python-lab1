@@ -9,6 +9,18 @@ pipeline {
       }
     }
 
+  stage('Install Dependencies') {
+    steps {
+      sh 'python3 -m pip install -r requirements.txt'
+    }
+  }
+
+  stage('Test') {
+    steps {
+      sh 'python3 -m pytest'
+    }
+  }
+        
   stage('Run Python') {
     steps {
       sh 'python3 app.py'
@@ -22,7 +34,7 @@ pipeline {
     }
 
     failure {
-      echo 'Python program failed.'
+      echo 'Pipeline failed. Check the test results.'
     }
   }
 }
