@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+   environment {
+       APP_ENV = 'production'
+   }
+
     stages {
 
         stage('Checkout') {
@@ -18,6 +22,20 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh './venv/bin/pip install -r requirements.txt'
+            }
+        }
+
+        stage('Use Jenkins Credentials') {
+            steps {
+                withCredentials([
+                    string(
+                        credentialsId: 'lab3-secret',
+                        variable: 'MY_SECRET'
+                    )
+                ]) {
+                    sh 'echo "Secret is available to jenkins"'
+                    sh 'echo "Environment: $APP_ENV"'
+                }
             }
         }
 
