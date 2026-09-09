@@ -1,40 +1,46 @@
 pipeline {
-  agent any
+    agent any
 
-  stages {
+    stages {
 
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Create Virtual Environment') {
+            steps {
+                sh 'python3 -m venv venv'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh './venv/bin/pip install -r requirements.txt'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh './venv/bin/python -m pytest'
+            }
+        }
+
+        stage('Run Python') {
+            steps {
+                sh './venv/bin/python app.py'
+            }
+        }
     }
 
-  stage('Install Dependencies') {
-    steps {
-      sh 'python3 -m pip install -r requirements.txt'
-    }
-  }
+    post {
+        success {
+            echo 'All tests passed and Python program ran successfully!'
+        }
 
-  stage('Test') {
-    steps {
-      sh 'python3 -m pytest'
+        failure {
+            echo 'Pipeline failed. Check the test results.'
+        }
     }
-  }
-        
-  stage('Run Python') {
-    steps {
-      sh 'python3 app.py'
-    }
-  }
-}
-
-  post {
-    success {
-      echo 'Python program ran successfully!'
-    }
-
-    failure {
-      echo 'Pipeline failed. Check the test results.'
-    }
-  }
 }
